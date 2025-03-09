@@ -10,7 +10,7 @@ const acervoBiblico = [
       "e ser pisado pelos homens."
     ],
     referencia: "Mateus 5:13"
-  },
+  }
   // Adicione outros versículos conforme necessário...
 ];
 
