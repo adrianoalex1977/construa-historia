@@ -139,12 +139,6 @@ document.getElementById("checkOrder").addEventListener("click", () => {
   const userOrder = Array.from(document.getElementById("story-list").children).map(li => li.textContent.trim());
   const isCorrect = JSON.stringify(userOrder) === JSON.stringify(textoOriginalGlobal);
 
-  if (isCorrect) {
-    alert(`Parabéns, ${nomeJogadorGlobal}! Você acertou em ${tempoFinal} segundos.`);
-  } else {
-    alert("Ops! A ordem está incorreta. Tente novamente.");
-  }
-
   // Grava o resultado no ranking do Firebase
   const rankingRef = ref(database, `salas/${salaIDGlobal}/ranking`);
   push(rankingRef, {
@@ -152,6 +146,36 @@ document.getElementById("checkOrder").addEventListener("click", () => {
     tempo: tempoFinal,
     resultado: isCorrect ? "Acertou" : "Errou",
     timestamp: new Date().toISOString()
+  }).then(() => {
+    if (isCorrect) {
+      alert(`Parabéns, ${nomeJogadorGlobal}! Você acertou em ${tempoFinal} segundos.`);
+      
+      // Busca o ranking dos jogadores que acertaram, ordena do mais rápido ao mais lento e exibe
+      get(rankingRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          let rankingList = [];
+          snapshot.forEach(childSnapshot => {
+            let record = childSnapshot.val();
+            if (record.resultado === "Acertou") {
+              rankingList.push(record);
+            }
+          });
+          rankingList.sort((a, b) => a.tempo - b.tempo);
+          let rankingText = "🏆 Ranking de Acertos:\n";
+          rankingList.forEach((r, i) => {
+            rankingText += `${i + 1}. ${r.jogador} - ${r.tempo} segundos\n`;
+          });
+          document.getElementById("result").innerText = rankingText;
+        } else {
+          document.getElementById("result").innerText = "Nenhum jogador acertou ainda.";
+        }
+      }).catch(error => console.error("Erro ao buscar ranking:", error));
+      
+    } else {
+      alert("Ops! A ordem está incorreta. Tente novamente.");
+    }
+  }).catch((error) => {
+    console.error("Erro ao gravar no ranking:", error);
   });
 });
 
@@ -166,7 +190,6 @@ function entrarNaSala() {
   }
 
   document.getElementById("sala-info").textContent = `Sala: ${salaIDGlobal} | Jogador: ${nomeJogadorGlobal}`;
-
   const salaRef = ref(database, `salas/${salaIDGlobal}`);
 
   get(salaRef).then((snapshot) => {
