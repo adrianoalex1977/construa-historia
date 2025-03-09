@@ -21,13 +21,15 @@ const historiaOriginal = [
     "A arca repousou no monte Ararate e Noé saiu."
 ];
 
+// Embaralha apenas para exibição local
+let historiaExibicao = historiaOriginal.sort(() => Math.random() - 0.5);
+
 // Embaralha apenas na exibição
 get(salaRef).then((snapshot) => {
     if (!snapshot.exists()) {
         // Salva apenas a ordem original no Firebase
         set(salaRef, { 
             historiaOriginal: historiaOriginal,
-            historia: historiaOriginal.sort(() => Math.random() - 0.5), // Embaralha para exibição
             jogadores: {} 
         });
     }
@@ -39,10 +41,10 @@ let draggedItem = null;
 // Quando a história estiver pronta, exibimos na tela
 onValue(salaRef, (snapshot) => {
     const data = snapshot.val();
-    if (data && data.historia) {
+    if (data && data.historiaOriginal) {
         const storyList = document.getElementById("story-list");
         storyList.innerHTML = "";
-        data.historia.forEach((part, index) => {
+        historiaExibicao.forEach((part, index) => {
             let li = document.createElement("li");
             li.textContent = part;
             li.draggable = true;
