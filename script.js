@@ -12,8 +12,8 @@ if (!salaID) {
 // Referência para o banco de dados
 const salaRef = ref(database, `salas/${salaID}`);
 
-// História a ser ordenada
-const historia = [
+// História original (não embaralhada)
+const historiaOriginal = [
     "Noé construiu uma arca sob ordem de Deus.",
     "Os animais entraram na arca em pares.",
     "Deus enviou um grande dilúvio sobre a terra.",
@@ -21,10 +21,15 @@ const historia = [
     "A arca repousou no monte Ararate e Noé saiu."
 ];
 
-// Embaralha apenas na criação da sala
+// Embaralha apenas na exibição
 get(salaRef).then((snapshot) => {
     if (!snapshot.exists()) {
-        set(salaRef, { historia: historia.sort(() => Math.random() - 0.5), jogadores: {} });
+        // Salva apenas a ordem original no Firebase
+        set(salaRef, { 
+            historiaOriginal: historiaOriginal,
+            historia: historiaOriginal.sort(() => Math.random() - 0.5), // Embaralha para exibição
+            jogadores: {} 
+        });
     }
 });
 
@@ -93,9 +98,9 @@ document.getElementById("checkOrder").addEventListener("click", () => {
     get(salaRef).then((snapshot) => {
         const data = snapshot.val();
 
-        if (data && data.historia) {
-            // Comparação da ordem correta
-            const originalOrder = data.historia; // Ordem embaralhada que é salva no banco
+        if (data && data.historiaOriginal) {
+            // Comparação da ordem correta (ordem original) com a ordem do jogador
+            const originalOrder = data.historiaOriginal; // Ordem original (não embaralhada)
             const isCorrectOrder = JSON.stringify(userOrder) === JSON.stringify(originalOrder);
 
             if (isCorrectOrder) {
