@@ -28,6 +28,9 @@ get(salaRef).then((snapshot) => {
     }
 });
 
+// Variáveis para controle de drag-and-drop
+let draggedItem = null;
+
 // Quando a história estiver pronta, exibimos na tela
 onValue(salaRef, (snapshot) => {
     const data = snapshot.val();
@@ -46,9 +49,6 @@ onValue(salaRef, (snapshot) => {
         });
     }
 });
-
-// Variáveis para controle de drag-and-drop
-let draggedItem = null;
 
 function handleDragStart(e) {
     draggedItem = e.target;
@@ -92,16 +92,22 @@ document.getElementById("checkOrder").addEventListener("click", () => {
 
     get(salaRef).then((snapshot) => {
         const data = snapshot.val();
-        // Comparação da ordem correta, independentemente do embaralhamento
-        if (JSON.stringify(userOrder.sort()) === JSON.stringify(data.historia.sort())) {
-            alert(`Parabéns, ${jogador}! Você acertou em ${timeTaken} segundos.`);
-            
-            // Salvar resultado do jogador
-            set(ref(database, `salas/${salaID}/jogadores/${jogador}`), {
-                tempo: timeTaken
-            });
-        } else {
-            alert("Ops! A ordem está errada. Tente novamente.");
+
+        if (data && data.historia) {
+            // Comparação da ordem correta
+            const originalOrder = data.historia; // Ordem embaralhada que é salva no banco
+            const isCorrectOrder = JSON.stringify(userOrder) === JSON.stringify(originalOrder);
+
+            if (isCorrectOrder) {
+                alert(`Parabéns, ${jogador}! Você acertou em ${timeTaken} segundos.`);
+                
+                // Salvar resultado do jogador
+                set(ref(database, `salas/${salaID}/jogadores/${jogador}`), {
+                    tempo: timeTaken
+                });
+            } else {
+                alert("Ops! A ordem está errada. Tente novamente.");
+            }
         }
     });
 });
