@@ -1,0 +1,8 @@
+get(salaRef).then((snapshot) => {
+    if (!snapshot.exists()) {
+        set(salaRef, { historia: historia.sort(() => Math.random() - 0.5), jogadores: {} });
+        console.log(`Sala criada com sucesso: ${salaID}`);  // Log para verificar
+    } else {
+        console.log(`Sala existente encontrada: ${salaID}`);  // Log se a sala já existir
+    }
+});
