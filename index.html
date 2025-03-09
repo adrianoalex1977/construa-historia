@@ -1,22 +1,33 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Construa a História Bíblica</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Jogo da Bíblia</title>
+    <script type="module" src="script.js"></script>
 </head>
 <body>
-    <h1>Construa a História Bíblica</h1>
-    <p>Arraste os trechos abaixo para colocá-los na ordem correta:</p>
+    <h1>Jogo da Bíblia</h1>
 
-    <div id="game-container">
-        <ul id="story-list"></ul>
+    <!-- Formulário para entrada na sala -->
+    <div id="entrarSala">
+        <label for="salaID">ID da Sala: </label>
+        <input type="text" id="salaID" placeholder="Digite o ID da sala">
+        <button id="entrarSalaBtn">Entrar</button>
     </div>
 
-    <button id="checkOrder">Verificar Resposta</button>
-    <p id="result"></p>
+    <!-- Exibir a história para ordenar -->
+    <ul id="story-list"></ul>
 
-    <script src="script.js"></script>
+    <!-- Botão para verificar a ordem -->
+    <button id="checkOrder">Verificar Ordem</button>
+
+    <!-- Exibir o ranking -->
+    <pre id="result"></pre>
+
+    <script>
+        // A referência ao script.js será carregada aqui
+    </script>
 </body>
 </html>
+
