@@ -65,7 +65,7 @@ function handleDrop(e) {
     e.preventDefault();
     const droppedItem = e.target;
 
-    if (draggedItem !== droppedItem) {
+    if (draggedItem !== droppedItem && droppedItem.tagName === "LI") {
         const allItems = Array.from(document.getElementById("story-list").children);
         const draggedIndex = allItems.indexOf(draggedItem);
         const droppedIndex = allItems.indexOf(droppedItem);
@@ -117,3 +117,4 @@ onValue(salaRef, (snapshot) => {
         document.getElementById("result").textContent = rankText;
     }
 });
+
