@@ -12,38 +12,73 @@ if (!salaID) {
 // Referência para o banco de dados
 const salaRef = ref(database, `salas/${salaID}`);
 
-// História original (não embaralhada)
-const historiaOriginal = [
-    "Noé construiu uma arca sob ordem de Deus.",
-    "Os animais entraram na arca em pares.",
-    "Deus enviou um grande dilúvio sobre a terra.",
-    "Após 40 dias e 40 noites, a chuva parou.",
-    "A arca repousou no monte Ararate e Noé saiu."
+// Acervo de versículos bíblicos
+const acervoBiblico = [
+    { 
+        textoOriginal: [
+            "No princípio, criou Deus os céus e a terra.",
+            "A terra era sem forma e vazia, e havia trevas sobre a face do abismo.",
+            "E o Espírito de Deus se movia sobre a face das águas.",
+            "Disse Deus: Haja luz; e houve luz."
+        ], 
+        referencia: "Gênesis 1:1-3"
+    },
+    {
+        textoOriginal: [
+            "O Senhor é o meu pastor, nada me faltará.",
+            "Ele me faz deitar em pastos verdejantes.",
+            "Guia-me mansamente a águas tranquilas.",
+            "Refrigera a minha alma."
+        ], 
+        referencia: "Salmo 23:1-3"
+    },
+    {
+        textoOriginal: [
+            "Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito.",
+            "Para que todo aquele que nele crê não pereça.",
+            "Mas tenha a vida eterna."
+        ],
+        referencia: "João 3:16"
+    }
+    // Adicione mais versículos conforme necessário
 ];
 
-// Embaralha a história apenas para exibição local
-let historiaExibicao = [...historiaOriginal].sort(() => Math.random() - 0.5);
-
-// Verifica se a sala já existe e salva a ordem correta (original) no Firebase
-get(salaRef).then((snapshot) => {
-    if (!snapshot.exists()) {
-        set(salaRef, { 
-            historiaOriginal: historiaOriginal,
-            jogadores: {} 
-        });
+// Função para embaralhar um array
+function embaralharArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]]; // Troca os elementos
     }
-});
+    return arr;
+}
 
-// Variáveis para controle de drag-and-drop
-let draggedItem = null;
+// Função para pegar um versículo aleatório e embaralhar as frases
+function pegarVersiculoAleatorio() {
+    const versiculo = acervoBiblico[Math.floor(Math.random() * acervoBiblico.length)];
+    const textoEmbaralhado = embaralharArray([...versiculo.textoOriginal]);
+
+    return {
+        textoOriginal: versiculo.textoOriginal,
+        textoEmbaralhado: textoEmbaralhado,
+        referencia: versiculo.referencia
+    };
+}
+
+// Iniciar tempo
+let startTime;
 
 // Quando a história estiver pronta, exibimos na tela
 onValue(salaRef, (snapshot) => {
     const data = snapshot.val();
     if (data && data.historiaOriginal) {
+        // Pega o versículo aleatório e embaralhado
+        const versiculoAtual = pegarVersiculoAleatorio();
+
         const storyList = document.getElementById("story-list");
-        storyList.innerHTML = "";
-        historiaExibicao.forEach((part, index) => {
+        storyList.innerHTML = "";  // Limpar lista antes de adicionar novas frases
+
+        // Exibir o versículo embaralhado
+        versiculoAtual.textoEmbaralhado.forEach((part, index) => {
             let li = document.createElement("li");
             li.textContent = part;
             li.draggable = true;
@@ -53,8 +88,24 @@ onValue(salaRef, (snapshot) => {
             li.addEventListener("drop", handleDrop);
             storyList.appendChild(li);
         });
+
+        // Exibir a referência
+        document.getElementById("versiculo-referencia").textContent = `Referência: ${versiculoAtual.referencia}`;
+
+        // Verifica se a sala já existe e salva a ordem correta (original) no Firebase
+        get(salaRef).then((snapshot) => {
+            if (!snapshot.exists()) {
+                set(salaRef, { 
+                    historiaOriginal: versiculoAtual.textoOriginal,
+                    jogadores: {} 
+                });
+            }
+        });
     }
 });
+
+// Variáveis para controle de drag-and-drop
+let draggedItem = null;
 
 function handleDragStart(e) {
     draggedItem = e.target;
