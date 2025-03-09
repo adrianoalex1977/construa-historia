@@ -1,77 +1,80 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const storyParts = [
-        "Noé construiu uma arca sob ordem de Deus.",
-        "Os animais entraram na arca em pares.",
-        "Deus enviou um grande dilúvio sobre a terra.",
-        "Após 40 dias e 40 noites, a chuva parou.",
-        "A arca repousou no monte Ararate e Noé saiu."
-    ];
+import { database, ref, set, get, onValue } from "./firebase-config.js";
 
-    // Ordem correta para verificação
-    const correctOrder = [...storyParts];
+let salaID = prompt("Digite o ID da sala ou deixe em branco para criar uma nova:");
+const jogador = prompt("Digite seu nome:");
 
-    // Embaralha os trechos
-    function shuffle(array) {
-        return array.sort(() => Math.random() - 0.5);
+// Cria uma nova sala se o ID estiver vazio
+if (!salaID) {
+    salaID = "sala-" + Math.floor(Math.random() * 100000);
+    alert(`Nova sala criada! Código: ${salaID}`);
+}
+
+// Referência para o banco de dados
+const salaRef = ref(database, `salas/${salaID}`);
+
+// História a ser ordenada
+const historia = [
+    "Noé construiu uma arca sob ordem de Deus.",
+    "Os animais entraram na arca em pares.",
+    "Deus enviou um grande dilúvio sobre a terra.",
+    "Após 40 dias e 40 noites, a chuva parou.",
+    "A arca repousou no monte Ararate e Noé saiu."
+];
+
+// Embaralha apenas na criação da sala
+get(salaRef).then((snapshot) => {
+    if (!snapshot.exists()) {
+        set(salaRef, { historia: historia.sort(() => Math.random() - 0.5), jogadores: {} });
     }
+});
 
-    const shuffledParts = shuffle([...storyParts]);
-    const storyList = document.getElementById("story-list");
-
-    shuffledParts.forEach((part, index) => {
-        let li = document.createElement("li");
-        li.textContent = part;
-        li.draggable = true;
-        li.dataset.index = index;
-        storyList.appendChild(li);
-    });
-
-    // Adiciona eventos de arrastar e soltar
-    let draggedItem = null;
-
-    document.querySelectorAll("li").forEach((li) => {
-        li.addEventListener("dragstart", (e) => {
-            draggedItem = li;
-            setTimeout(() => (li.style.display = "none"), 0);
+// Quando a história estiver pronta, exibimos na tela
+onValue(salaRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data && data.historia) {
+        const storyList = document.getElementById("story-list");
+        storyList.innerHTML = "";
+        data.historia.forEach((part) => {
+            let li = document.createElement("li");
+            li.textContent = part;
+            li.draggable = true;
+            storyList.appendChild(li);
         });
+    }
+});
 
-        li.addEventListener("dragend", () => {
-            draggedItem.style.display = "block";
-            draggedItem = null;
-        });
+// ⏳ Iniciar tempo
+const startTime = Date.now();
 
-        li.addEventListener("dragover", (e) => {
-            e.preventDefault();
-        });
+// Verificar a resposta
+document.getElementById("checkOrder").addEventListener("click", () => {
+    let userOrder = Array.from(document.getElementById("story-list").children).map((li) => li.textContent);
+    let timeTaken = (Date.now() - startTime) / 1000; // Tempo em segundos
 
-        li.addEventListener("drop", (e) => {
-            e.preventDefault();
-            if (draggedItem !== li) {
-                let list = storyList.children;
-                let draggedIndex = Array.from(list).indexOf(draggedItem);
-                let targetIndex = Array.from(list).indexOf(li);
-
-                // Troca os itens na lista
-                if (draggedIndex > targetIndex) {
-                    storyList.insertBefore(draggedItem, li);
-                } else {
-                    storyList.insertBefore(draggedItem, li.nextSibling);
-                }
-            }
-        });
-    });
-
-    // Verificar a ordem
-    document.getElementById("checkOrder").addEventListener("click", () => {
-        let userOrder = Array.from(storyList.children).map((li) => li.textContent);
-        let resultText = document.getElementById("result");
-
-        if (JSON.stringify(userOrder) === JSON.stringify(correctOrder)) {
-            resultText.textContent = "Parabéns! Você ordenou corretamente.";
-            resultText.style.color = "green";
+    get(salaRef).then((snapshot) => {
+        const data = snapshot.val();
+        if (JSON.stringify(userOrder) === JSON.stringify(data.historia.sort())) {
+            alert(`Parabéns, ${jogador}! Você acertou em ${timeTaken} segundos.`);
+            
+            // Salvar resultado do jogador
+            set(ref(database, `salas/${salaID}/jogadores/${jogador}`), {
+                tempo: timeTaken
+            });
         } else {
-            resultText.textContent = "Ops! Tente novamente.";
-            resultText.style.color = "red";
+            alert("Ops! A ordem está errada. Tente novamente.");
         }
     });
+});
+
+// Ranking
+onValue(salaRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data && data.jogadores) {
+        let ranking = Object.entries(data.jogadores).sort((a, b) => a[1].tempo - b[1].tempo);
+        let rankText = "🏆 Ranking:\n";
+        ranking.forEach(([nome, info], i) => {
+            rankText += `${i + 1}. ${nome} - ${info.tempo} segundos\n`;
+        });
+        document.getElementById("result").textContent = rankText;
+    }
 });
