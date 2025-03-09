@@ -34,14 +34,53 @@ onValue(salaRef, (snapshot) => {
     if (data && data.historia) {
         const storyList = document.getElementById("story-list");
         storyList.innerHTML = "";
-        data.historia.forEach((part) => {
+        data.historia.forEach((part, index) => {
             let li = document.createElement("li");
             li.textContent = part;
             li.draggable = true;
+            li.dataset.index = index;
+            li.addEventListener("dragstart", handleDragStart);
+            li.addEventListener("dragover", handleDragOver);
+            li.addEventListener("drop", handleDrop);
             storyList.appendChild(li);
         });
     }
 });
+
+// Variáveis para controle de drag-and-drop
+let draggedItem = null;
+
+function handleDragStart(e) {
+    draggedItem = e.target;
+    setTimeout(() => {
+        e.target.style.display = "none";
+    }, 0);
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    const droppedItem = e.target;
+
+    if (draggedItem !== droppedItem) {
+        const allItems = Array.from(document.getElementById("story-list").children);
+        const draggedIndex = allItems.indexOf(draggedItem);
+        const droppedIndex = allItems.indexOf(droppedItem);
+
+        // Trocar a ordem dos itens
+        if (draggedIndex < droppedIndex) {
+            droppedItem.after(draggedItem);
+        } else {
+            droppedItem.before(draggedItem);
+        }
+    }
+
+    draggedItem.style.display = "block";
+    draggedItem = null;
+}
 
 // ⏳ Iniciar tempo
 const startTime = Date.now();
@@ -78,4 +117,3 @@ onValue(salaRef, (snapshot) => {
         document.getElementById("result").textContent = rankText;
     }
 });
-
