@@ -12,14 +12,38 @@ if (!salaID) {
 // Referência para o banco de dados
 const salaRef = ref(database, `salas/${salaID}`);
 
-// História original (não embaralhada)
-const historiaOriginal = [
-    "Noé construiu uma arca sob ordem de Deus.",
-    "Os animais entraram na arca em pares.",
-    "Deus enviou um grande dilúvio sobre a terra.",
-    "Após 40 dias e 40 noites, a chuva parou.",
-    "A arca repousou no monte Ararate e Noé saiu."
+// Acervo de versículos bíblicos
+const acervoBiblico = [
+    { 
+        textoOriginal: [
+            "No princípio, criou Deus os céus e a terra.",
+            "A terra era sem forma e vazia, e havia trevas sobre a face do abismo.",
+            "E o Espírito de Deus se movia sobre a face das águas.",
+            "Disse Deus: Haja luz; e houve luz."
+        ], 
+        referencia: "Gênesis 1:1-3"
+    },
+    {
+        textoOriginal: [
+            "O Senhor é o meu pastor, nada me faltará.",
+            "Ele me faz deitar em pastos verdejantes.",
+            "Guia-me mansamente a águas tranquilas.",
+            "Refrigera a minha alma."
+        ], 
+        referencia: "Salmo 23:1-3"
+    },
+    {
+        textoOriginal: [
+            "Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito.",
+            "Para que todo aquele que nele crê não pereça.",
+            "Mas tenha a vida eterna."
+        ],
+        referencia: "João 3:16"
+    }
 ];
+
+// Escolher aleatoriamente um dos "textoOriginal"
+const historiaOriginal = acervoBiblico[Math.floor(Math.random() * acervoBiblico.length)].textoOriginal;
 
 // Embaralha a história apenas para exibição local
 let historiaExibicao = [...historiaOriginal].sort(() => Math.random() - 0.5);
@@ -51,6 +75,12 @@ onValue(salaRef, (snapshot) => {
             li.addEventListener("dragstart", handleDragStart);
             li.addEventListener("dragover", handleDragOver);
             li.addEventListener("drop", handleDrop);
+            
+            // Adicionando suporte para dispositivos móveis
+            li.addEventListener('touchstart', handleDragStart);
+            li.addEventListener('touchmove', handleDragOver);
+            li.addEventListener('touchend', handleDrop);
+            
             storyList.appendChild(li);
         });
     }
