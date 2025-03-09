@@ -27,6 +27,23 @@ const acervoBiblico = [
         ],
         referencia: "Mateus 5:13"
     },
+    {
+        textoOriginal: [
+            "O Senhor é o meu pastor, nada me faltará.",
+            "Ele me faz deitar em pastos verdejantes.",
+            "Guia-me mansamente a águas tranquilas.",
+            "Refrigera a minha alma."
+        ], 
+        referencia: "Salmo 23:1-3"
+    },
+    {
+        textoOriginal: [
+            "Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito.",
+            "Para que todo aquele que nele crê não pereça.",
+            "Mas tenha a vida eterna."
+        ],
+        referencia: "João 3:16"
+    }
     // ... (outros versículos)
 ];
 
