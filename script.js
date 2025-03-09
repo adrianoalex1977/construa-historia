@@ -19,8 +19,8 @@ const acervoBiblico = [
         "Disse Deus: Haja luz; e houve luz."
     ], 
     referencia: "Gênesis 1:1-3"
-},
-{
+  },
+  {
     textoOriginal: [
         "O Senhor é o meu pastor; nada me faltará.",
         "Deitar-me faz em verdes pastos, guia-me mansamente a águas tranquilas.",
@@ -28,8 +28,8 @@ const acervoBiblico = [
         "Ainda que eu andasse pelo vale da sombra da morte, não temeria mal algum, porque tu estás comigo."
     ], 
     referencia: "Salmos 23:1-4"
-},
-{
+  },
+  {
     textoOriginal: [
         "Bem-aventurados os pobres de espírito, porque deles é o reino dos céus.",
         "Bem-aventurados os que choram, porque eles serão consolados.",
@@ -37,8 +37,8 @@ const acervoBiblico = [
         "Bem-aventurados os que têm fome e sede de justiça, porque eles serão fartos."
     ],
     referencia: "Mateus 5:3-6"
-},
-{
+  },
+  {
     textoOriginal: [
         "Honra a teu pai e a tua mãe, como o Senhor teu Deus te ordenou.",
         "Para que se prolonguem os teus dias,",
@@ -46,8 +46,8 @@ const acervoBiblico = [
         "Este é o primeiro mandamento com promessa."
     ],
     referencia: "Deuteronômio 5:16 / Efésios 6:2"
-},
-{
+  },
+  {
     textoOriginal: [
         "Vinde a mim, todos os que estais cansados e oprimidos, e eu vos aliviarei.",
         "Tomai sobre vós o meu jugo, e aprendei de mim, que sou manso e humilde de coração.",
@@ -55,8 +55,8 @@ const acervoBiblico = [
         "Porque o meu jugo é suave e o meu fardo é leve."
     ],
     referencia: "Mateus 11:28-30"
-},
-{
+  },
+  {
     textoOriginal: [
         "O Senhor é a minha luz e a minha salvação; a quem temerei?",
         "O Senhor é a força da minha vida; de quem me recearei?",
@@ -64,8 +64,8 @@ const acervoBiblico = [
         "Ainda que um exército me cercasse, o meu coração não temeria."
     ],
     referencia: "Salmos 27:1-3"
-},
-{
+  },
+  {
     textoOriginal: [
         "Portanto, ide, ensinai todas as nações,",
         "batizando-as em nome do Pai, e do Filho, e do Espírito Santo;",
@@ -190,7 +190,7 @@ const acervoBiblico = [
         "vou preparar-vos lugar."
     ],
     referencia: "João 14:1-2"
-},
+  },
   {
     textoOriginal: [
         "Vós sois o sal da terra;",
@@ -199,8 +199,8 @@ const acervoBiblico = [
         "e ser pisado pelos homens."
     ],
     referencia: "Mateus 5:13"
-},
-{
+  },
+  {
     textoOriginal: [
         "Vós sois a luz do mundo;",
         "não se pode esconder uma cidade edificada sobre um monte.",
@@ -398,8 +398,6 @@ const acervoBiblico = [
     ],
     referencia: "João 14:6-7"
 }
-
-
   // Adicione outros versículos conforme necessário...
 ];
 
