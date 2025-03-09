@@ -12,44 +12,23 @@ if (!salaID) {
 // Referência para o banco de dados
 const salaRef = ref(database, `salas/${salaID}`);
 
-// Acervo de versículos bíblicos
-const acervoBiblico = [
-    { 
-        textoOriginal: [
-            "No princípio, criou Deus os céus e a terra.",
-            "A terra era sem forma e vazia, e havia trevas sobre a face do abismo.",
-            "E o Espírito de Deus se movia sobre a face das águas.",
-            "Disse Deus: Haja luz; e houve luz."
-        ], 
-        referencia: "Gênesis 1:1-3"
-    },
-    {
-        textoOriginal: [
-            "O Senhor é o meu pastor, nada me faltará.",
-            "Ele me faz deitar em pastos verdejantes.",
-            "Guia-me mansamente a águas tranquilas.",
-            "Refrigera a minha alma."
-        ], 
-        referencia: "Salmo 23:1-3"
-    },
-    {
-        textoOriginal: [
-            "Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito.",
-            "Para que todo aquele que nele crê não pereça.",
-            "Mas tenha a vida eterna."
-        ],
-        referencia: "João 3:16"
-    }
+// História original (não embaralhada)
+const historiaOriginal = [
+    "Noé construiu uma arca sob ordem de Deus.",
+    "Os animais entraram na arca em pares.",
+    "Deus enviou um grande dilúvio sobre a terra.",
+    "Após 40 dias e 40 noites, a chuva parou.",
+    "A arca repousou no monte Ararate e Noé saiu."
 ];
 
-// Embaralha os versículos para exibição local
-let versiculoExibicao = [...acervoBiblico].sort(() => Math.random() - 0.5);
+// Embaralha a história apenas para exibição local
+let historiaExibicao = [...historiaOriginal].sort(() => Math.random() - 0.5);
 
-// Verifica se a sala já existe e salva os versículos no Firebase
+// Verifica se a sala já existe e salva a ordem correta (original) no Firebase
 get(salaRef).then((snapshot) => {
     if (!snapshot.exists()) {
         set(salaRef, { 
-            acervoBiblico: acervoBiblico,
+            historiaOriginal: historiaOriginal,
             jogadores: {} 
         });
     }
@@ -58,15 +37,15 @@ get(salaRef).then((snapshot) => {
 // Variáveis para controle de drag-and-drop
 let draggedItem = null;
 
-// Quando os versículos estiverem prontos, exibimos na tela
+// Quando a história estiver pronta, exibimos na tela
 onValue(salaRef, (snapshot) => {
     const data = snapshot.val();
-    if (data && data.acervoBiblico) {
+    if (data && data.historiaOriginal) {
         const storyList = document.getElementById("story-list");
         storyList.innerHTML = "";
-        versiculoExibicao.forEach((versiculo, index) => {
+        historiaExibicao.forEach((part, index) => {
             let li = document.createElement("li");
-            li.textContent = versiculo.textoOriginal.join(" ");
+            li.textContent = part;
             li.draggable = true;
             li.dataset.index = index;
             li.addEventListener("dragstart", handleDragStart);
@@ -120,10 +99,10 @@ document.getElementById("checkOrder").addEventListener("click", () => {
     get(salaRef).then((snapshot) => {
         const data = snapshot.val();
 
-        if (data && data.acervoBiblico) {
-            // Comparação da ordem correta (versículo original) com a ordem do jogador
-            const versiculoOriginal = data.acervoBiblico.map(item => item.textoOriginal.join(" "));
-            const isCorrectOrder = JSON.stringify(userOrder) === JSON.stringify(versiculoOriginal);
+        if (data && data.historiaOriginal) {
+            // Comparação da ordem correta (historiaOriginal) com a ordem do jogador
+            const originalOrder = data.historiaOriginal; // Ordem original (não embaralhada)
+            const isCorrectOrder = JSON.stringify(userOrder) === JSON.stringify(originalOrder);
 
             if (isCorrectOrder) {
                 alert(`Parabéns, ${jogador}! Você acertou em ${timeTaken} segundos.`);
