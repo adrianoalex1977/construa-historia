@@ -1,5 +1,7 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+// Importando o Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+import { getDatabase, ref, set, get, push } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+
 
 // 🔹 Substitua pelos seus dados do Firebase 🔹
 const firebaseConfig = {
@@ -13,8 +15,10 @@ const firebaseConfig = {
   measurementId: "G-XWXGWN695B"
 };
 
-// Inicializa o Firebase
+
+// Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-export { database, ref, set, get, onValue };
+// Exportar para uso no script.js
+export { database, ref, set, get, push };
