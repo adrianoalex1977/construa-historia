@@ -21,13 +21,12 @@ const historiaOriginal = [
     "A arca repousou no monte Ararate e Noé saiu."
 ];
 
-// Embaralha apenas para exibição local
-let historiaExibicao = historiaOriginal.sort(() => Math.random() - 0.5);
+// Embaralha a história apenas para exibição local
+let historiaExibicao = [...historiaOriginal].sort(() => Math.random() - 0.5);
 
-// Embaralha apenas na exibição
+// Verifica se a sala já existe e salva a ordem correta (original) no Firebase
 get(salaRef).then((snapshot) => {
     if (!snapshot.exists()) {
-        // Salva apenas a ordem original no Firebase
         set(salaRef, { 
             historiaOriginal: historiaOriginal,
             jogadores: {} 
@@ -101,14 +100,14 @@ document.getElementById("checkOrder").addEventListener("click", () => {
         const data = snapshot.val();
 
         if (data && data.historiaOriginal) {
-            // Comparação da ordem correta (ordem original) com a ordem do jogador
+            // Comparação da ordem correta (historiaOriginal) com a ordem do jogador
             const originalOrder = data.historiaOriginal; // Ordem original (não embaralhada)
             const isCorrectOrder = JSON.stringify(userOrder) === JSON.stringify(originalOrder);
 
             if (isCorrectOrder) {
                 alert(`Parabéns, ${jogador}! Você acertou em ${timeTaken} segundos.`);
                 
-                // Salvar resultado do jogador
+                // Salvar resultado do jogador no Firebase
                 set(ref(database, `salas/${salaID}/jogadores/${jogador}`), {
                     tempo: timeTaken
                 });
