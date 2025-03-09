@@ -9,10 +9,10 @@ if (!salaID) {
     alert(`Nova sala criada! Código: ${salaID}`);
 }
 
-// Referência para o banco de dados
+document.getElementById("sala-id").textContent = `Sala: ${salaID}`;
+
 const salaRef = ref(database, `salas/${salaID}`);
 
-// Acervo de versículos bíblicos
 const acervoBiblico = [
     { 
         textoOriginal: [
@@ -42,13 +42,9 @@ const acervoBiblico = [
     }
 ];
 
-// Escolher aleatoriamente um dos "textoOriginal"
 const historiaOriginal = acervoBiblico[Math.floor(Math.random() * acervoBiblico.length)].textoOriginal;
-
-// Embaralha a história apenas para exibição local
 let historiaExibicao = [...historiaOriginal].sort(() => Math.random() - 0.5);
 
-// Verifica se a sala já existe e salva a ordem correta (original) no Firebase
 get(salaRef).then((snapshot) => {
     if (!snapshot.exists()) {
         set(salaRef, { 
@@ -58,10 +54,8 @@ get(salaRef).then((snapshot) => {
     }
 });
 
-// Variáveis para controle de arrastar
 let draggedItem = null;
 
-// Quando a história estiver pronta, exibimos na tela
 onValue(salaRef, (snapshot) => {
     const data = snapshot.val();
     if (data && data.historiaOriginal) {
