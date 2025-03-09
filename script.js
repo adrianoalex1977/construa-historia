@@ -33,21 +33,11 @@ onValue(salaRef, (snapshot) => {
     const data = snapshot.val();
     if (data && data.historia) {
         const storyList = document.getElementById("story-list");
-        storyList.innerHTML = "";  // Limpa a lista anterior
-
-        data.historia.forEach((part, index) => {
+        storyList.innerHTML = "";
+        data.historia.forEach((part) => {
             let li = document.createElement("li");
             li.textContent = part;
-            li.draggable = true;  // Permite arrastar o item
-            li.setAttribute('data-index', index);  // Adiciona um atributo para identificar a ordem original
-
-            // Adiciona os eventos de drag-and-drop
-            li.addEventListener("dragstart", dragStart);
-            li.addEventListener("dragover", dragOver);
-            li.addEventListener("drop", drop);
-            li.addEventListener("dragenter", dragEnter);
-            li.addEventListener("dragleave", dragLeave);
-
+            li.draggable = true;
             storyList.appendChild(li);
         });
     }
@@ -63,7 +53,7 @@ document.getElementById("checkOrder").addEventListener("click", () => {
 
     get(salaRef).then((snapshot) => {
         const data = snapshot.val();
-        if (JSON.stringify(userOrder) === JSON.stringify(data.historia.sort())) {
+        if (JSON.stringify(userOrder) === JSON.stringify(data.historia)) {  // Verifica com a ordem original
             alert(`Parabéns, ${jogador}! Você acertou em ${timeTaken} segundos.`);
             
             // Salvar resultado do jogador
@@ -89,50 +79,3 @@ onValue(salaRef, (snapshot) => {
     }
 });
 
-// Funções de Drag-and-Drop
-
-// Função para iniciar o arrasto
-let draggedItem = null;
-function dragStart(e) {
-    draggedItem = e.target;
-    e.target.style.opacity = "0.5";  // Deixa o item transparente enquanto é arrastado
-}
-
-// Função para permitir o arrasto sobre a lista
-function dragOver(e) {
-    e.preventDefault();
-}
-
-// Função para quando o item for solto
-function drop(e) {
-    e.preventDefault();
-    if (e.target.tagName === "LI" && e.target !== draggedItem) {
-        let draggedIndex = draggedItem.getAttribute("data-index");
-        let targetIndex = e.target.getAttribute("data-index");
-
-        // Troca o texto entre os dois itens
-        let temp = draggedItem.textContent;
-        draggedItem.textContent = e.target.textContent;
-        e.target.textContent = temp;
-
-        // Atualiza o índice
-        draggedItem.setAttribute("data-index", targetIndex);
-        e.target.setAttribute("data-index", draggedIndex);
-    }
-    draggedItem.style.opacity = "1";
-    draggedItem = null;
-}
-
-// Função de hover para destacar o item enquanto ele é arrastado
-function dragEnter(e) {
-    if (e.target.tagName === "LI") {
-        e.target.style.border = "2px dashed #ccc";
-    }
-}
-
-// Função para remover o destaque
-function dragLeave(e) {
-    if (e.target.tagName === "LI") {
-        e.target.style.border = "";
-    }
-}
