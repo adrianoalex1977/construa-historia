@@ -1,6 +1,6 @@
-import { database, ref, set, get } from "./firebase-config.js";
+import { database, ref, set, get, push } from "./firebase-config.js";
 
-// Acervo de versículos bíblicos (adicione o acervo completo conforme desejar)
+// Acervo de versículos
 const acervoBiblico = [
     {
         textoOriginal: [
@@ -11,7 +11,7 @@ const acervoBiblico = [
         ],
         referencia: "Mateus 5:13"
     },
-    // Adicione mais versículos conforme necessário...
+    // Adicione mais versículos aqui
 ];
 
 // Função para embaralhar o texto
@@ -24,10 +24,16 @@ function embaralhar(array) {
     return copia;
 }
 
-// Função para exibir o texto embaralhado na tela (com drag and drop)
+// Variáveis globais para acessar depois
+let textoOriginalGlobal = [];
+let referenciaGlobal = "";
+let salaIDGlobal = "";
+let nomeJogadorGlobal = "";
+
+// Função para exibir o texto embaralhado
 function exibirTextoEmbaralhado(texto, referencia) {
     const container = document.getElementById("story-list");
-    container.innerHTML = ""; // Limpa o conteúdo anterior
+    container.innerHTML = "";
 
     texto.forEach((linha) => {
         const li = document.createElement("li");
@@ -37,21 +43,19 @@ function exibirTextoEmbaralhado(texto, referencia) {
         container.appendChild(li);
     });
 
-    // Atualiza a referência
     const refContainer = document.getElementById("result");
     refContainer.textContent = `Referência: ${referencia}`;
 
-    // Ativar arrastar e soltar
     ativarDragAndDrop();
 }
 
-// Função para ativar drag and drop com mouse e touch
+// Ativar o Drag and Drop (mouse e touch)
 function ativarDragAndDrop() {
     const listItems = document.querySelectorAll("#story-list li");
     let draggedItem = null;
 
     listItems.forEach((item) => {
-        // Eventos para Mouse
+        // Mouse
         item.addEventListener("dragstart", function (e) {
             draggedItem = item;
             setTimeout(() => item.style.display = "none", 0);
@@ -94,9 +98,8 @@ function ativarDragAndDrop() {
             }
         });
 
-        // Eventos para Touch (Celular)
+        // Touch
         let touchStartY = 0;
-
         item.addEventListener("touchstart", function (e) {
             touchStartY = e.touches[0].clientY;
             draggedItem = item;
@@ -108,11 +111,7 @@ function ativarDragAndDrop() {
             const touchY = e.touches[0].clientY;
             const movingUp = touchY < touchStartY;
 
-            const currentItem = document.elementFromPoint(
-                e.touches[0].clientX,
-                e.touches[0].clientY
-            );
-
+            const currentItem = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
             if (currentItem && currentItem.tagName === "LI" && currentItem !== draggedItem) {
                 const parent = currentItem.parentNode;
                 if (movingUp) {
@@ -121,7 +120,6 @@ function ativarDragAndDrop() {
                     parent.insertBefore(draggedItem, currentItem.nextSibling);
                 }
             }
-
             touchStartY = touchY;
         });
 
@@ -132,41 +130,53 @@ function ativarDragAndDrop() {
     });
 }
 
-// Função principal ao clicar em "Entrar"
-function entrarNaSala() {
-    const salaID = document.getElementById("salaID").value.trim();
+// Função Verificar Ordem
+document.getElementById("checkOrder").addEventListener("click", () => {
+    const itensOrdenados = Array.from(document.querySelectorAll("#story-list li")).map(li => li.textContent.trim());
+    const correto = JSON.stringify(itensOrdenados) === JSON.stringify(textoOriginalGlobal);
+    const resultado = correto ? "✅ Parabéns, você acertou!" : "❌ A ordem está incorreta. Tente novamente.";
+    alert(resultado);
 
-    if (!salaID) {
-        alert("Por favor, digite um ID de sala.");
+    // Salvar resultado no ranking
+    const rankingRef = ref(database, `salas/${salaIDGlobal}/ranking`);
+    push(rankingRef, {
+        jogador: nomeJogadorGlobal,
+        resultado: correto ? "Acertou" : "Errou",
+        data: new Date().toISOString()
+    });
+});
+
+// Função principal para entrar na sala
+function entrarNaSala() {
+    salaIDGlobal = document.getElementById("salaID").value.trim();
+    nomeJogadorGlobal = document.getElementById("nomeJogador").value.trim();
+
+    if (!salaIDGlobal || !nomeJogadorGlobal) {
+        alert("Por favor, preencha seu nome e o ID da sala.");
         return;
     }
 
-    document.getElementById("sala-info").textContent = `Sala: ${salaID}`;
-    const salaRef = ref(database, `salas/${salaID}`);
+    document.getElementById("sala-info").textContent = `Sala: ${salaIDGlobal}`;
+
+    const salaRef = ref(database, `salas/${salaIDGlobal}`);
 
     get(salaRef).then((snapshot) => {
         if (snapshot.exists()) {
             const dadosSala = snapshot.val();
-            console.log("Sala existente encontrada:", dadosSala);
-            exibirTextoEmbaralhado(dadosSala.textoEmbaralhado, dadosSala.referencia);
+            textoOriginalGlobal = dadosSala.textoOriginal;
+            referenciaGlobal = dadosSala.referencia;
+            exibirTextoEmbaralhado(dadosSala.textoEmbaralhado, referenciaGlobal);
         } else {
             const indiceAleatorio = Math.floor(Math.random() * acervoBiblico.length);
-            const versiculoSelecionado = acervoBiblico[indiceAleatorio];
-            const textoOriginal = versiculoSelecionado.textoOriginal;
-            const referencia = versiculoSelecionado.referencia;
-            const textoEmbaralhado = embaralhar(textoOriginal);
+            const versiculo = acervoBiblico[indiceAleatorio];
+            textoOriginalGlobal = versiculo.textoOriginal;
+            referenciaGlobal = versiculo.referencia;
+            const embaralhado = embaralhar(textoOriginalGlobal);
 
-            set(salaRef, {
-                textoOriginal: textoOriginal,
-                textoEmbaralhado: textoEmbaralhado,
-                referencia: referencia
-            }).then(() => {
-                console.log("Nova sala criada e texto salvo!");
-                exibirTextoEmbaralhado(textoEmbaralhado, referencia);
-            }).catch((error) => console.error("Erro ao criar a sala:", error));
+            set(salaRef, { textoOriginal: textoOriginalGlobal, textoEmbaralhado: embaralhado, referencia: referenciaGlobal });
+            exibirTextoEmbaralhado(embaralhado, referenciaGlobal);
         }
-    }).catch((error) => console.error("Erro ao buscar a sala:", error));
+    });
 }
 
-// Adiciona o evento ao botão "Entrar"
 document.getElementById("entrarSalaBtn").addEventListener("click", entrarNaSala);
