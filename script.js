@@ -40,47 +40,33 @@ const acervoBiblico = [
         ],
         referencia: "João 3:16"
     }
-    // Adicione mais versículos conforme necessário
 ];
 
-// Função para embaralhar um array
-function embaralharArray(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]]; // Troca os elementos
+// Embaralha os versículos para exibição local
+let versiculoExibicao = [...acervoBiblico].sort(() => Math.random() - 0.5);
+
+// Verifica se a sala já existe e salva os versículos no Firebase
+get(salaRef).then((snapshot) => {
+    if (!snapshot.exists()) {
+        set(salaRef, { 
+            acervoBiblico: acervoBiblico,
+            jogadores: {} 
+        });
     }
-    return arr;
-}
+});
 
-// Função para pegar um versículo aleatório e embaralhar as frases
-function pegarVersiculoAleatorio() {
-    const versiculo = acervoBiblico[Math.floor(Math.random() * acervoBiblico.length)];
-    const textoEmbaralhado = embaralharArray([...versiculo.textoOriginal]);
+// Variáveis para controle de drag-and-drop
+let draggedItem = null;
 
-    return {
-        textoOriginal: versiculo.textoOriginal,
-        textoEmbaralhado: textoEmbaralhado,
-        referencia: versiculo.referencia
-    };
-}
-
-// Iniciar tempo
-let startTime;
-
-// Quando a história estiver pronta, exibimos na tela
+// Quando os versículos estiverem prontos, exibimos na tela
 onValue(salaRef, (snapshot) => {
     const data = snapshot.val();
-    if (data && data.historiaOriginal) {
-        // Pega o versículo aleatório e embaralhado
-        const versiculoAtual = pegarVersiculoAleatorio();
-
+    if (data && data.acervoBiblico) {
         const storyList = document.getElementById("story-list");
-        storyList.innerHTML = "";  // Limpar lista antes de adicionar novas frases
-
-        // Exibir o versículo embaralhado
-        versiculoAtual.textoEmbaralhado.forEach((part, index) => {
+        storyList.innerHTML = "";
+        versiculoExibicao.forEach((versiculo, index) => {
             let li = document.createElement("li");
-            li.textContent = part;
+            li.textContent = versiculo.textoOriginal.join(" ");
             li.draggable = true;
             li.dataset.index = index;
             li.addEventListener("dragstart", handleDragStart);
@@ -88,24 +74,8 @@ onValue(salaRef, (snapshot) => {
             li.addEventListener("drop", handleDrop);
             storyList.appendChild(li);
         });
-
-        // Exibir a referência
-        document.getElementById("versiculo-referencia").textContent = `Referência: ${versiculoAtual.referencia}`;
-
-        // Verifica se a sala já existe e salva a ordem correta (original) no Firebase
-        get(salaRef).then((snapshot) => {
-            if (!snapshot.exists()) {
-                set(salaRef, { 
-                    historiaOriginal: versiculoAtual.textoOriginal,
-                    jogadores: {} 
-                });
-            }
-        });
     }
 });
-
-// Variáveis para controle de drag-and-drop
-let draggedItem = null;
 
 function handleDragStart(e) {
     draggedItem = e.target;
@@ -150,10 +120,10 @@ document.getElementById("checkOrder").addEventListener("click", () => {
     get(salaRef).then((snapshot) => {
         const data = snapshot.val();
 
-        if (data && data.historiaOriginal) {
-            // Comparação da ordem correta (historiaOriginal) com a ordem do jogador
-            const originalOrder = data.historiaOriginal; // Ordem original (não embaralhada)
-            const isCorrectOrder = JSON.stringify(userOrder) === JSON.stringify(originalOrder);
+        if (data && data.acervoBiblico) {
+            // Comparação da ordem correta (versículo original) com a ordem do jogador
+            const versiculoOriginal = data.acervoBiblico.map(item => item.textoOriginal.join(" "));
+            const isCorrectOrder = JSON.stringify(userOrder) === JSON.stringify(versiculoOriginal);
 
             if (isCorrectOrder) {
                 alert(`Parabéns, ${jogador}! Você acertou em ${timeTaken} segundos.`);
