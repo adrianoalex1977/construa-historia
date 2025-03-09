@@ -58,7 +58,7 @@ get(salaRef).then((snapshot) => {
     }
 });
 
-// Variáveis para controle de drag-and-drop
+// Variáveis para controle de arrastar
 let draggedItem = null;
 
 // Quando a história estiver pronta, exibimos na tela
@@ -67,25 +67,27 @@ onValue(salaRef, (snapshot) => {
     if (data && data.historiaOriginal) {
         const storyList = document.getElementById("story-list");
         storyList.innerHTML = "";
-        historiaExibicao.forEach((part, index) => {
+        historiaExibicao.forEach((part) => {
             let li = document.createElement("li");
             li.textContent = part;
             li.draggable = true;
-            li.dataset.index = index;
+
+            // Eventos para Desktop (Drag and Drop)
             li.addEventListener("dragstart", handleDragStart);
             li.addEventListener("dragover", handleDragOver);
             li.addEventListener("drop", handleDrop);
-            
-            // Adicionando suporte para dispositivos móveis
-            li.addEventListener('touchstart', handleDragStart);
-            li.addEventListener('touchmove', handleDragOver);
-            li.addEventListener('touchend', handleDrop);
-            
+
+            // Eventos para Celular (Touch)
+            li.addEventListener("touchstart", handleTouchStart);
+            li.addEventListener("touchmove", handleTouchMove);
+            li.addEventListener("touchend", handleTouchEnd);
+
             storyList.appendChild(li);
         });
     }
 });
 
+// === Eventos para Drag and Drop (Desktop) ===
 function handleDragStart(e) {
     draggedItem = e.target;
     setTimeout(() => {
@@ -118,6 +120,58 @@ function handleDrop(e) {
     draggedItem = null;
 }
 
+// === Eventos para Touch (Celular) ===
+function handleTouchStart(e) {
+    draggedItem = e.target;
+    draggedItem.style.opacity = "0.5";
+
+    // Captura a posição inicial do toque
+    const touch = e.touches[0];
+    draggedItem.startY = touch.clientY;
+}
+
+function handleTouchMove(e) {
+    if (!draggedItem) return;
+
+    e.preventDefault(); // Evita rolagem da tela ao arrastar
+
+    const touch = e.touches[0];
+    const currentY = touch.clientY;
+    const storyList = document.getElementById("story-list");
+    const allItems = Array.from(storyList.children);
+
+    let closest = null;
+    let closestOffset = Number.POSITIVE_INFINITY;
+
+    allItems.forEach(item => {
+        const box = item.getBoundingClientRect();
+        const offset = Math.abs(currentY - box.top - box.height / 2);
+
+        if (offset < closestOffset) {
+            closestOffset = offset;
+            closest = item;
+        }
+    });
+
+    if (closest && closest !== draggedItem) {
+        const draggedIndex = allItems.indexOf(draggedItem);
+        const closestIndex = allItems.indexOf(closest);
+
+        if (draggedIndex < closestIndex) {
+            closest.after(draggedItem);
+        } else {
+            closest.before(draggedItem);
+        }
+    }
+}
+
+function handleTouchEnd() {
+    if (draggedItem) {
+        draggedItem.style.opacity = "1";
+        draggedItem = null;
+    }
+}
+
 // ⏳ Iniciar tempo
 const startTime = Date.now();
 
@@ -130,13 +184,12 @@ document.getElementById("checkOrder").addEventListener("click", () => {
         const data = snapshot.val();
 
         if (data && data.historiaOriginal) {
-            // Comparação da ordem correta (historiaOriginal) com a ordem do jogador
             const originalOrder = data.historiaOriginal; // Ordem original (não embaralhada)
             const isCorrectOrder = JSON.stringify(userOrder) === JSON.stringify(originalOrder);
 
             if (isCorrectOrder) {
                 alert(`Parabéns, ${jogador}! Você acertou em ${timeTaken} segundos.`);
-                
+
                 // Salvar resultado do jogador no Firebase
                 set(ref(database, `salas/${salaID}/jogadores/${jogador}`), {
                     tempo: timeTaken
