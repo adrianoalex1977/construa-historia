@@ -92,7 +92,8 @@ document.getElementById("checkOrder").addEventListener("click", () => {
 
     get(salaRef).then((snapshot) => {
         const data = snapshot.val();
-        if (JSON.stringify(userOrder) === JSON.stringify(data.historia)) {  // Verifica com a ordem original
+        // Comparação da ordem correta, independentemente do embaralhamento
+        if (JSON.stringify(userOrder.sort()) === JSON.stringify(data.historia.sort())) {
             alert(`Parabéns, ${jogador}! Você acertou em ${timeTaken} segundos.`);
             
             // Salvar resultado do jogador
@@ -117,4 +118,3 @@ onValue(salaRef, (snapshot) => {
         document.getElementById("result").textContent = rankText;
     }
 });
-
