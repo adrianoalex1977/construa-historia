@@ -7,6 +7,7 @@ const jogador = prompt("Digite seu nome:");
 if (!salaID) {
     salaID = "sala-" + Math.floor(Math.random() * 100000);
     alert(`Nova sala criada! Código: ${salaID}`);
+	document.getElementById("sala-info").textContent = `Sala: ${salaID}`;
 }
 
 document.getElementById("sala-id").textContent = `Sala: ${salaID}`;
