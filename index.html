@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jogo da Bíblia</title>
     <script type="module" src="script.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         ul {
             list-style-type: none;
@@ -30,30 +31,34 @@
         }
     </style>
 </head>
-<body>
-    <h1>Jogo da Bíblia</h1>
+<body class="bg-light">
+    <div class="container">
+        <h1 class="text-center my-4">Reorganize os Textos</h1>
 
-    <!-- Formulário para entrada na sala e nome do jogador -->
-    <div id="entrarSala">
-        <label for="nomeJogador">Seu Nome: </label>
-        <input type="text" id="nomeJogador" placeholder="Digite seu nome">
+        <!-- Formulário para entrada na sala e nome do jogador -->
+        <div id="entrarSala" class="mb-4">
+            <div class="form-group">
+                <label for="nomeJogador">Seu Nome: </label>
+                <input type="text" id="nomeJogador" class="form-control" placeholder="Digite seu nome">
+            </div>
+            <div class="form-group">
+                <label for="salaID">ID da Sala: </label>
+                <input type="text" id="salaID" class="form-control" placeholder="Digite o ID da sala">
+            </div>
+            <button id="entrarSalaBtn" class="btn btn-primary">Entrar</button>
+        </div>
 
-        <label for="salaID">ID da Sala: </label>
-        <input type="text" id="salaID" placeholder="Digite o ID da sala">
+        <!-- Código da Sala -->
+        <p id="sala-info" class="font-weight-bold">Sala: </p>
 
-        <button id="entrarSalaBtn">Entrar</button>
+        <!-- Exibir a história para ordenar -->
+        <ul id="story-list" class="list-group"></ul>
+
+        <!-- Botão para verificar a ordem -->
+        <button id="checkOrder" class="btn btn-success mt-3">Verificar Ordem</button>
+
+        <!-- Exibir o ranking -->
+        <pre id="result" class="mt-3"></pre>
     </div>
-
-    <!-- Código da Sala -->
-    <p id="sala-info">Sala: </p>
-
-    <!-- Exibir a história para ordenar -->
-    <ul id="story-list"></ul>
-
-    <!-- Botão para verificar a ordem -->
-    <button id="checkOrder">Verificar Ordem</button>
-
-    <!-- Exibir o ranking -->
-    <pre id="result"></pre>
 </body>
 </html>
