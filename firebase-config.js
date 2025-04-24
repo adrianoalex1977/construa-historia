@@ -1,9 +1,9 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getDatabase, ref, set, get, push } from "firebase/database";
+// firebase-config.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-analytics.js";
+import { getDatabase, ref, set, get, push } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
 
-// Your web app's Firebase configuration
+// Configuração Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAUw5QkA8MWnUus5PYM-BSKTVVGL8gRVsg",
   authDomain: "construahistoria-ec81b.firebaseapp.com",
@@ -15,10 +15,10 @@ const firebaseConfig = {
   measurementId: "G-XWXGWN695B"
 };
 
-// Initialize Firebase
+// Inicializa Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const database = getDatabase(app);
 
-// Export for use in other modules
-export { database, ref, set, get, push };
+// Exportações
+export { database, ref, set, get, push }; push };
