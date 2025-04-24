@@ -1,8 +1,8 @@
-// firebase-config.js
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-import { getDatabase, ref, set, get, push } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+// Importando as funções necessárias do SDK do Firebase
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, set, push, get } from "firebase/database";
 
-// Configuração Firebase
+// Sua configuração do Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAUw5QkA8MWnUus5PYM-BSKTVVGL8gRVsg",
   authDomain: "construahistoria-ec81b.firebaseapp.com",
@@ -14,9 +14,11 @@ const firebaseConfig = {
   measurementId: "G-XWXGWN695B"
 };
 
-// Inicializa Firebase
+// Inicializando o Firebase
 const app = initializeApp(firebaseConfig);
+
+// Obtenção da instância do banco de dados
 const database = getDatabase(app);
 
-// Exportações
-export { database, ref, set, get, push };t, push }; push };
+// Exportando funções para serem usadas em outros arquivos
+export { database, ref, set, push, get };
