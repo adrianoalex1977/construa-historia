@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XWXGWN695B"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XWXGWN695B"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XWXGWN695B');
+    </script>
 
-  gtag('config', 'G-XWXGWN695B');
-</script>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aprenda Fácil a Bíbia - Jogo da Bíblia</title>
-    <script type="module" src="script.js"></script>
+    <title>Aprenda Fácil a Bíblia - Jogo da Bíblia</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         ul {
@@ -41,20 +37,48 @@
             cursor: grabbing;
         }
     </style>
+
+    <script type="module">
+        // Importe a função initializeApp e outras funções que você precisa
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+        import { getDatabase, ref, set, get, push } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
+
+        // Sua configuração do Firebase (a mesma que você tem no firebase-config.js)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAUw5QkA8MWnUus5PYM-BSKTVVGL8gRVsg",
+            authDomain: "construahistoria-ec81b.firebaseapp.com",
+            databaseURL: "https://construahistoria-ec81b-default-rtdb.firebaseio.com",
+            projectId: "construahistoria-ec81b",
+            storageBucket: "construahistoria-ec81b.appspot.com",
+            messagingSenderId: "456242999327",
+            appId: "1:456242999327:web:143ede3fbbcb37051f252a",
+            measurementId: "G-XWXGWN695B"
+        };
+
+        // Inicialize o Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Exporte as funcionalidades para o escopo global
+        window.database = database;
+        window.ref = ref;
+        window.set = set;
+        window.get = get;
+        window.push = push;
+    </script>
 </head>
 <body class="bg-light">
     <div style="display: flex; align-items: center;">
         <img src="bíblia.jpg" alt="Bíblia Aberta" width="200" style="margin-right: 20px;">
         <p>
-          <strong>Você conhece mesmo a Bíblia?:</strong><br>
-          Vamos ver como você se sai nesse divertido jogo. Nele você precisa colocar na ordem correta o texto bíblico
+            <strong>Você conhece mesmo a Bíblia?:</strong><br>
+            Vamos ver como você se sai nesse divertido jogo. Nele você precisa colocar na ordem correta o texto bíblico
         </p>
-      </div>
+    </div>
     <div class="container">
         <h1 class="text-center my-4">Reorganize os Textos.</h1>
         <h2 class="text-center my-4">E veja o quanto você conhece a Bíblia</h2>
 
-        <!-- Formulário para entrada na sala e nome do jogador -->
         <div id="entrarSala" class="mb-4">
             <div class="form-group">
                 <label for="nomeJogador">Seu Nome: </label>
@@ -67,17 +91,15 @@
             <button id="entrarSalaBtn" class="btn btn-primary">Entrar</button>
         </div>
 
-        <!-- Código da Sala -->
         <p id="sala-info" class="font-weight-bold">Sala: </p>
 
-        <!-- Exibir a história para ordenar -->
         <ul id="story-list" class="list-group"></ul>
 
-        <!-- Botão para verificar a ordem -->
         <button id="checkOrder" class="btn btn-success mt-3">Verificar Ordem</button>
 
-        <!-- Exibir o ranking -->
         <pre id="result" class="mt-3"></pre>
     </div>
+
+    <script type="module" src="script.js"></script>
 </body>
 </html>
