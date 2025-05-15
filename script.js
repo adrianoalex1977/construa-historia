@@ -1,4 +1,3 @@
-import { database, ref, set, get, push } from "./firebase-config.js";
 
 // Acervo de versículos (adicione quantos quiser)
 const acervoBiblico = [
